@@ -1,0 +1,105 @@
+body {
+    background-color: lightgrey;
+}
+
+section, h1 {
+    text-align: center;
+}
+
+div {
+    display: inline-block;
+    border: 1px solid black;
+    padding: 0.5em;
+    width: 20%;
+    font-size: 15px;
+    margin: 10px;
+    box-shadow: 0px 3px 9px 0px;
+    background-color: rgb(233, 233, 233)
+}
+
+h2, ul, li {
+    text-align: left;
+}
+
+li {
+    font-weight: bold;
+}
+
+#battleArea {
+    text-align: center;
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4); 
+  }
+
+#battleField {
+    z-index: 2;
+    text-align: center;
+    padding: 0px;
+    margin: 0px!important;
+    max-width: 1300px;
+    min-height: 607px;
+    min-width: 840px;
+    background-color: white;
+    background-image: url(background.png);
+    background-size: contain;
+    box-shadow: unset;
+    border: unset;
+    background-repeat: no-repeat;
+    max-height: 935px;
+}
+
+canvas {
+    z-index: 3;
+    display: inline-block;
+    position: relative;
+    width: 200px;
+    height: 300px;
+    background-color: transparent;
+    margin-top: 30px;
+}
+
+#firstPokemon {
+    margin-right: 50px;
+}
+
+#secondPokemon {
+    margin-left: 50px;
+}
+
+progress {
+    display: none;
+    background-color: green;
+    border: 2px solid black;
+    height: 30px;
+    width: 250px;
+}
+
+#healthFirstPockemon {
+    margin-right: 25px;
+}
+
+#healthSecondPockemon {
+    margin-left: 25px;
+}
+
+#hpBars {
+    display: block;
+    width: inherit;
+    background-color: transparent;
+    margin: 0px;
+    box-shadow: unset;
+    border: unset;
+    max-width: 1300px;
+    min-width: 840px;
+    padding: 105px 0px 0px 0px;
+}
+
+

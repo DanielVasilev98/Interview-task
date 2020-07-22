@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Document</title>
+    <!--<script src="pokemon.js"></script>-->
+</head>
+<body>
+    <h1>Pokemons</h1>
+    <section id="allPokemons"></section>
+    <div id="battleArea">
+        <div id="battleField">
+                <div id="hpBars">
+                    <progress id="healthFristPockemon" value="100" max="100">HP</progress>
+                    <progress id="healthSecondPockemon" value="100" max="100">HP</progress>
+                </div>
+                <canvas id="firstPokemon">
+                    <img id="firstBackImg" style="display: none; width: 80px;height: 80px;"/>
+                </canvas>
+                <canvas id="secondPokemon">
+                    <img id="secondBackImg" style="display: none; width: 80px;height: 80px;"/>
+                </canvas>
+        </div>
+    </div>
+</body>
+<script>
+    // Solution
+        async function dataExtract() {
+                   const url = 'https://pokeapi.co/api/v2/pokemon/';
+       
+                   let respon = fetch(url);
+                   let parent = document.getElementById("allPokemons")
+                   let pokemonSpecs = [];
+                   let counter = 0;
+                   let idCounter = 0
+
+                   await fetch(url)
+                       .then(response => response.json())
+                       .then(data => {
+       
+                           async function pokemonData(responseUrl) { // fetching the rest of the pokemons data
+                                   let response = await fetch(responseUrl)
+                                   let data = await response.json()
+                                   return data;
+                               }
+                               
+                            //process the fetched data and visualize it
+                           for (const pokemon of data.results) {
+                               let eachPokemonSpecs = {};
+                               let allPokemonStats = [];
+       
+       
+                               pokemonData(pokemon.url)
+                                   .then(addData => {
+       
+                                       idCounter+=1
+                                       eachPokemonSpecs.backImage = addData.sprites.back_default;
+                                       eachPokemonSpecs.frontImg = addData.sprites.front_default;
+                                       eachPokemonSpecs.name = pokemon.name;
+       
+                                       let pokemonCard = document.createElement("div")
+                                       pokemonCard.setAttribute("id", idCounter);
+                                       parent.appendChild(pokemonCard)
+       
+                                       let image = document.createElement("img");
+                                       let name = document.createElement("h2");
+                                       let abty = document.createElement("h2");
+                                       let moves = document.createElement("ul");
+       
+                                       image.setAttribute("src", addData.sprites.front_default) // setting the src of the front img
+                                       pokemonCard.appendChild(image); // appending the img to the DOM tree
+                                       pokemonCard.appendChild(name).textContent = "Name: " + pokemon.name; // appending the name
+                                       pokemonCard.appendChild(abty).textContent = !addData.abilities[0].is_hidden?"Ability: " + addData.abilities[0].ability.name: ""; // appending ability type
+                                       pokemonCard.appendChild(moves)
+       
+                                       let fourMoves = [];
+                                       let movesCounter = 0;
+
+                                       for (let m of addData.moves) {
+                                           movesCounter+=1;
+                                           let move = document.createElement("li")
+                                           if (movesCounter <= 4) {
+                                               moves.appendChild(move).textContent = "Move " + movesCounter + ": " + m.move.name; // adding the required 4 moves
+                                               fourMoves[movesCounter-1] = m.move.name;
+                                           }
+                                       }
+       
+                                       movesCounter = 0;
+                                       eachPokemonSpecs.moves = fourMoves;
+       
+                                       let eachPokemonStat = {};
+                                       let eachPokemonProp = {};
+       
+                                       let statsCounter = 0;
+                                       for (let s of addData.stats) {
+                                           statsCounter+=1;
+                                           let stat = document.createElement("h2");
+                                           pokemonCard.appendChild(stat).textContent = s.stat.name + ": " + s.base_stat; // adding the required 6 stats
+                                           eachPokemonStat.name = s.stat.name;
+                                           eachPokemonStat.stats = s.base_stat;
+                                           allPokemonStats[statsCounter-1] = {name: eachPokemonStat.name, stats: eachPokemonStat.stats};
+                                       }
+                                       statsCounter=0;
+                                       eachPokemonSpecs.stats = allPokemonStats;
+                                   })
+                                   
+                               pokemonSpecs[counter] = eachPokemonSpecs; // adding all of the pockemons data to array, so we can use it for the drawing and logical operations
+                               counter+=1;
+                           }
+                       });
+                   setTimeout(function(){
+       
+                        let selectedPokemon = "";
+
+                        for(let i=1;i<=pokemonSpecs.length;i++) {
+                            document.getElementById(i).addEventListener("click", function(){ // finding which pokemon is clicked
+                               let battleArea = document.getElementById("battleArea").setAttribute("style", "display: block;"); // showing the battle area
+                               let hpBarFirst = document.getElementById("healthFristPockemon").setAttribute("style", "display: inline-block;"); // showing the first pokemon hp bar
+                               let hpBarSecond = document.getElementById("healthSecondPockemon").setAttribute("style", "display: inline-block;"); // showing the second pokemon p bar
+                               selectedPokemon = document.getElementById(i).getElementsByTagName("h2")[0].textContent.slice(6); // taking the name of the selected pokemon fo further logic
+
+                               let firstPokemonBackImage = "";
+                               
+                               for(let i=0;i<pokemonSpecs.length;i++) {
+                                   if(pokemonSpecs[i].name == selectedPokemon) { // checking if the selected pokemon's name is in the list if all pokemons
+                                       firstPokemonBackImage = pokemonSpecs[i].backImage;
+                                       if(i > 0) {                  //
+                                           pokemonSpecs.splice(i, 1)// removing the selected pokemon from the list of all pokemons, so when we use the list to take the random opponent the selected pokemon won't be there
+                                       } else {                     //
+                                           pokemonSpecs.splice(0, 1)//
+                                       }
+                                   }
+                               }
+
+                               let firstImg = firstPokemonBackImage;
+                               let firstBackImgElement = document.getElementById("firstBackImg");
+                               firstBackImgElement.setAttribute("src", firstImg)
+       
+                               let firstPokemon = document.getElementById("firstPokemon");
+                               let firstContext = firstPokemon.getContext("2d");
+       
+                               let randomPockemon = pokemonSpecs[Math.floor(Math.random() * pokemonSpecs.length)]; // getting random opponent
+                               let secondPokemonName = randomPockemon.name;
+                               let secondImg = randomPockemon.frontImg;
+       
+                               let secondImgElement = document.getElementById("secondBackImg");
+                               secondImgElement.setAttribute("src", secondImg)
+       
+                               let secondPokemon = document.getElementById("secondPokemon");
+                               let secondContext = secondPokemon.getContext("2d");
+
+                               setTimeout(function(){ //drawing
+                                   firstContext.font = "40px Arial";
+                                   firstContext.textAlign = "center";
+                                   firstContext.fillText(selectedPokemon, firstPokemon.width/2, firstPokemon.height/3); // drawing the selected pokemon name
+                                   firstContext.drawImage(firstBackImgElement, firstPokemon.width/3, firstPokemon.height/3); // and img
+                                   
+                                   secondContext.font = "40px Arial";
+                                   secondContext.textAlign = "center";
+                                   secondContext.fillText(secondPokemonName, secondPokemon.width/2, secondPokemon.height/3); // drawing the selected random opponent name
+                                   secondContext.drawImage(secondImgElement, secondPokemon.width/3, secondPokemon.height/3); // and img
+                               
+                               }, 500)
+                            
+                            
+                               
+                           })
+                       }
+                   }, 500)
+
+               }
+               dataExtract();
+       
+</script>
+</html>
