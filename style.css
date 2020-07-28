@@ -66,40 +66,20 @@ canvas {
     margin-top: 30px;
 }
 
-#firstPokemon {
-    margin-right: 50px;
-}
-
-#secondPokemon {
-    margin-left: 50px;
-}
-
-progress {
+#win, #loss {
     display: none;
-    background-color: green;
-    border: 2px solid black;
-    height: 30px;
-    width: 250px;
 }
 
-#healthFirstPockemon {
-    margin-right: 25px;
-}
-
-#healthSecondPockemon {
-    margin-left: 25px;
-}
-
-#hpBars {
+#playAgain {
     display: block;
-    width: inherit;
-    background-color: transparent;
-    margin: 0px;
-    box-shadow: unset;
-    border: unset;
-    max-width: 1300px;
-    min-width: 840px;
-    padding: 105px 0px 0px 0px;
+    margin-left: 36%;
 }
 
+#winOrLoss {
+    display: none;
+    position: absolute;
+    margin-left: 40%;
+    margin-top: 210px;
+    z-index: 3;
+}
 
